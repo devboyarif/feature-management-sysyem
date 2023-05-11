@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Project;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('feature_requests', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Project::class)->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['pending','complete','inprogress'])->default('pending');

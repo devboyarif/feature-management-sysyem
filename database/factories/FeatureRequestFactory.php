@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Project;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,6 +19,7 @@ class FeatureRequestFactory extends Factory
     public function definition(): array
     {
         return [
+            'project_id' => Project::inRandomOrder()->value('id'),
             'title' => fake()->name,
             'description' => fake()->sentence(10),
             'status' => Arr::random(['pending','complete','inprogress']),

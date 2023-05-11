@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class FeatureRequests extends Component
 {
-    public $status, $showSubmitForm = false, $title, $description;
+    public $project_id, $status, $showSubmitForm = false, $title, $description;
 
     protected $rules = [
         'title' => 'required|max:255',
@@ -17,13 +17,13 @@ class FeatureRequests extends Component
 
     public function render()
     {
-        $data['features_requests'] = FeatureRequest::when($this->status && $this->status != 'all', function($query){
+        $data['features_requests'] = FeatureRequest::where('project_id', $this->project_id)->when($this->status && $this->status != 'all', function($query){
                 return $query->where('status', $this->status);
             })
             ->latest()
             ->paginate(20);
 
-        $data['features_requests_data'] = FeatureRequest::all();
+        $data['features_requests_data'] = FeatureRequest::where('project_id', $this->project_id)->get();
         $data['counts'] = [
             'all' => $data['features_requests_data']->count(),
             'pending' => $data['features_requests_data']->where('status', 'pending')->count(),
@@ -32,6 +32,10 @@ class FeatureRequests extends Component
         ];
 
         return view('livewire.frontend.feature-requests', $data);
+    }
+
+    public function mount(){
+        $this->project_id = request()->project->id;
     }
 
     public function changeStatus($type){
@@ -60,11 +64,12 @@ class FeatureRequests extends Component
         $this->validate();
 
         FeatureRequest::create([
+            'project_id' => $this->project_id,
             'title' => $this->title,
             'description' => $this->description,
         ]);
 
-        $this->reset();
+        $this->reset(['title', 'description', 'showSubmitForm']);
     }
 
 
